@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S. I. & Co. | GST Invoice Parser & Tally Voucher Manager</title>
+  <meta name="description" content="S. I. & Co. - Enterprise GST Sales Voucher Management, Real OCR Batch Invoice Parser, Tally Multi-Line Excel Exporter, and Tally XML Generator" />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- SheetJS for client-side Excel parsing & template generation -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- PDF.js for reading PDF documents in browser -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Tesseract.js for client-side Image OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">SI</div>
+        <div class="brand-info">
+          <div class="brand-title">S. I. & Co.</div>
+          <div class="brand-subtitle">GST & Tally Engine</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item active" id="nav-dashboard">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          </svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="#vouchers" class="nav-item" id="nav-vouchers">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>Vouchers</span>
+        </a>
+
+        <a href="#clients" class="nav-item" id="nav-clients">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          <span>Clients / Customers</span>
+        </a>
+
+        <a href="#import" class="nav-item" id="nav-import">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+          </svg>
+          <span>Excel Import</span>
+        </a>
+
+        <a href="#extract" class="nav-item" id="nav-extract">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>Batch Bill Extract</span>
+        </a>
+
+        <a href="#reports" class="nav-item" id="nav-reports">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span>Reports & GSTR</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar" style="background: #0f172a; color: white; font-weight: 800;">SI</div>
+          <div class="user-details">
+            <div class="user-name">S. I. & Co.</div>
+            <div class="user-role">GSTIN: 27AABCA1234F1Z8</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle-btn" id="mobileToggleBtn">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+          <h1 class="page-heading" id="pageTitle">Dashboard</h1>
+        </div>
+
+        <div class="topbar-right">
+          <div class="badge-gst-active">
+            <span class="badge-dot"></span>
+            <span>GST Live Sync</span>
+          </div>
+          <button class="btn btn-primary btn-sm" id="exportTallyExcelBtnTop" onclick="document.getElementById('exportTallyExcelBtn')?.click()">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Tally Excel Export</span>
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="app.openNewVoucherModal()">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            <span>New Voucher</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Body Container -->
+      <main class="content-body">
+
+        <!-- ========================================================= -->
+        <!-- VIEW 1: DASHBOARD -->
+        <!-- ========================================================= -->
+        <section id="view-dashboard" class="view-section active">
+          
+          <!-- KPI Summary Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">Vouchers</span>
+                <div class="kpi-icon">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-vouchers">0</div>
+              <div class="kpi-sub">Total recorded sales</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">Taxable Value</span>
+                <div class="kpi-icon">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-taxable">₹ 0.00</div>
+              <div class="kpi-sub">Net base turnover</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">CGST</span>
+                <div class="kpi-icon">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-cgst">₹ 0.00</div>
+              <div class="kpi-sub">Central GST liability</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">SGST + IGST</span>
+                <div class="kpi-icon">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-sgst-igst">₹ 0.00</div>
+              <div class="kpi-sub">State & Integrated tax</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-header">
+                <span class="kpi-label">Invoice Total</span>
+                <div class="kpi-icon">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-invoice-total">₹ 0.00</div>
+              <div class="kpi-sub">Gross sales revenue</div>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+            <!-- Monthly Sales Trend Chart -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Monthly Sales Trend</div>
+                  <div class="card-subtitle">Gross turnover volume grouped by month</div>
+                </div>
+              </div>
+              <div class="chart-container" id="monthlyChartContainer"></div>
+            </div>
+
+            <!-- GST Rate Distribution Donut -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">GST Slabs</div>
+                  <div class="card-subtitle">Turnover by rate percentage</div>
+                </div>
+              </div>
+              <div id="rateDonutContainer" style="padding: 10px 0;"></div>
+              <div id="rateDonutLegend" style="margin-top: 14px;"></div>
+            </div>
+          </div>
+
+          <!-- Recent Vouchers Table -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Recent Vouchers</div>
+                <div class="card-subtitle">Latest sales vouchers recorded in system</div>
+              </div>
+              <a href="#vouchers" class="btn btn-outline btn-sm">View All Vouchers →</a>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Voucher #</th>
+                    <th>Customer / Party</th>
+                    <th>Type</th>
+                    <th>GST %</th>
+                    <th class="text-right">Total (₹)</th>
+                    <th class="text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recentVouchersBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 2: VOUCHERS LEDGER -->
+        <!-- ========================================================= -->
+        <section id="view-vouchers" class="view-section">
+          <div class="card" style="margin-bottom: 20px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+              
+              <!-- Search & Filters -->
+              <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
+                <div class="input-group" style="max-width: 320px; flex: 1;">
+                  <span class="input-icon-left">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                  </span>
+                  <input type="text" id="voucherSearchInput" class="input input-with-icon" placeholder="Search voucher no, GSTIN, or customer..." />
+                </div>
+
+                <select id="voucherRateFilter" class="select" style="max-width: 140px;">
+                  <option value="all">All GST Rates</option>
+                  <option value="0">0% GST</option>
+                  <option value="5">5% GST</option>
+                  <option value="12">12% GST</option>
+                  <option value="18">18% GST</option>
+                  <option value="28">28% GST</option>
+                </select>
+
+                <select id="voucherTypeFilter" class="select" style="max-width: 150px;">
+                  <option value="all">All Types</option>
+                  <option value="intrastate">Intra-State (CGST+SGST)</option>
+                  <option value="interstate">Inter-State (IGST)</option>
+                </select>
+                
+                <span class="badge badge-rate" id="vouchersTotalCount">0 Vouchers</span>
+              </div>
+
+              <!-- Action Buttons -->
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                
+                <!-- TALLY MULTI-LINE EXCEL EXPORT (DESIRED FORMAT) -->
+                <button class="btn btn-primary btn-sm font-bold" id="exportTallyExcelBtn" style="background: #047857;">
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  <span>Tally Multi-Line Excel (Dr/Cr)</span>
+                </button>
+
+                <!-- FLAT SUMMARY EXCEL EXPORT -->
+                <button class="btn btn-outline btn-sm" id="exportFlatExcelBtn">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  <span>Summary Excel</span>
+                </button>
+
+                <!-- TALLY XML EXPORT -->
+                <button class="btn btn-outline btn-sm" id="exportTallyXmlBtn">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20"/></svg>
+                  <span>Tally XML</span>
+                </button>
+
+                <button class="btn btn-primary btn-sm" onclick="app.openNewVoucherModal()">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                  <span>New Voucher</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Bulk Selection Action Bar -->
+          <div id="voucherBulkActionBar" class="bulk-action-bar" style="display: none;">
+            <div class="bulk-action-info">
+              <span class="bulk-select-count" id="voucherSelectedCount">0</span>
+              <span>vouchers selected</span>
+              <button type="button" class="btn btn-outline btn-xs" id="selectAllFilteredVouchersBtn" style="margin-left: 6px;">Select All Visible (<span id="voucherFilteredCount">0</span>)</button>
+              <button type="button" class="btn btn-outline btn-xs text-slate-500" id="clearVoucherSelectionBtn" style="margin-left: 4px;">Deselect All</button>
+            </div>
+            <div class="bulk-action-buttons">
+              <button type="button" class="btn btn-danger btn-sm font-bold" id="deleteSelectedVouchersBtn">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                <span>Delete Selected (<span id="deleteSelectedCountBadge">0</span>)</span>
+              </button>
+              <button type="button" class="btn btn-outline btn-sm font-bold" id="exportSelectedExcelBtn" style="color: #047857;">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Export Selected</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Table -->
+          <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="table-container" style="border: none; border-radius: 0;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th style="width: 44px; text-align: center; padding: 12px 10px;">
+                      <input type="checkbox" id="selectAllVouchersCheckbox" class="voucher-checkbox" title="Select / Deselect all visible vouchers" />
+                    </th>
+                    <th>Date</th>
+                    <th>Voucher #</th>
+                    <th>Customer / Ledger</th>
+                    <th>Type</th>
+                    <th>Rate</th>
+                    <th class="text-right">Taxable (₹)</th>
+                    <th class="text-right">CGST (₹)</th>
+                    <th class="text-right">SGST (₹)</th>
+                    <th class="text-right">IGST (₹)</th>
+                    <th class="text-right">Total (₹)</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="vouchersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 3: EXCEL IMPORT -->
+        <!-- ========================================================= -->
+        <section id="view-import" class="view-section">
+          <div style="max-width: 840px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px;">
+            
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Import Vouchers from Excel / CSV</div>
+                  <div class="card-subtitle">
+                    Upload spreadsheets containing sales records. Supports automatic column mapping and data validation.
+                  </div>
+                </div>
+                <button class="btn btn-outline btn-sm" id="downloadExcelTemplateBtn">
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                  <span>Get Template (.xlsx)</span>
+                </button>
+              </div>
+
+              <!-- Upload Zone -->
+              <div class="upload-zone" id="excelDropzone">
+                <svg class="upload-zone-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <div style="font-size: 15px; font-weight: 700; color: #0f172a;">Drag & Drop your Excel file here</div>
+                <div style="font-size: 13px; color: #64748b; margin-top: 4px;">or click to browse files (.xlsx, .xls, .csv)</div>
+                <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display: none;" />
+              </div>
+
+              <div style="margin-top: 14px; font-size: 12px; color: #64748b;">
+                <strong>Expected columns:</strong> Date, Voucher Number, Customer / Ledger Name, GSTIN, Taxable Value, GST Rate, Interstate (Yes/No).
+              </div>
+
+              <!-- Parsing Status Box -->
+              <div id="excelImportStatus" style="display: none; margin-top: 18px; padding: 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;"></div>
+            </div>
+
+            <!-- Import Preview Table -->
+            <div class="card" id="excelPreviewContainer" style="display: none;">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Parsed Records Preview</div>
+                  <div class="card-subtitle">Review vouchers before committing to the live ledger</div>
+                </div>
+              </div>
+
+              <div class="table-container">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Voucher #</th>
+                      <th>Customer Name</th>
+                      <th>GSTIN</th>
+                      <th>Type</th>
+                      <th>Rate</th>
+                      <th class="text-right">Total (₹)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="excelPreviewTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 4: BATCH BILL EXTRACT (1-CLICK MULTI-FILE AI OCR) -->
+        <!-- ========================================================= -->
+        <section id="view-extract" class="view-section">
+          
+          <!-- Top Multi-File Upload & Batch Controls Bar -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header" style="margin-bottom: 16px;">
+              <div>
+                <div class="card-title" style="font-size: 18px;">Batch Bill & Invoice AI OCR Extractor</div>
+                <div class="card-subtitle">Upload any number of bills (PDF, JPG, PNG, WEBP) and extract all financial records in 1-click.</div>
+              </div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-outline btn-sm font-bold" id="loadSamplePackBtn">
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                  <span>Load Sample Bills (CR-70 to CR-74)</span>
+                </button>
+                <button class="btn btn-secondary btn-sm" id="clearBatchBtn" style="display: none;">
+                  <span>Clear Queue</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Multi-file Dropzone -->
+            <div class="upload-zone" id="batchBillDropzone" style="padding: 36px 20px;">
+              <svg class="upload-zone-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width: 52px; height: 52px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <div style="font-size: 16px; font-weight: 700; color: #0f172a;">Drag & Drop Any Number of Invoices / Bills Here</div>
+              <div style="font-size: 13px; color: #64748b; margin-top: 4px;">Supports multiple files at once: PDF, JPG, JPEG, PNG, WEBP</div>
+              <div style="margin-top: 12px;">
+                <button type="button" class="btn btn-outline btn-sm">Browse Files (Select Multiple)</button>
+              </div>
+              <input type="file" id="batchBillFileInput" multiple accept="application/pdf,image/*" style="display: none;" />
+            </div>
+
+            <!-- Batch Progress Bar (Hidden during idle) -->
+            <div id="batchProgressBarContainer" style="display: none; margin-top: 20px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px;">
+              <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 8px;">
+                <span id="batchProgressStatus">Extracting bills with AI OCR vision...</span>
+                <span id="batchProgressPercent" class="font-mono-data">0%</span>
+              </div>
+              <div style="width: 100%; height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden;">
+                <div id="batchProgressBar" style="width: 0%; height: 100%; background: #0f172a; transition: width 200ms ease-out;"></div>
+              </div>
+            </div>
+
+            <!-- Batch One-Click Action Bar -->
+            <div id="batchActionBar" style="display: none; margin-top: 20px; padding: 16px 20px; background: #0f172a; color: white; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <span class="badge" style="background: #22c55e; color: white; padding: 4px 10px; font-size: 12px;" id="batchCountBadge">0 Bills Ready</span>
+                <div>
+                  <div style="font-weight: 700; font-size: 15px;" id="batchSummaryTitle">All bills extracted with AI OCR</div>
+                  <div style="font-size: 12px; color: #94a3b8;" id="batchSummarySub">Total Invoiced Volume: ₹ 0.00</div>
+                </div>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn btn-success btn-md font-bold" id="commitAllBatchBtn" style="font-size: 14px; padding: 10px 20px;">
+                  <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  <span>Import All Extracted Bills to Ledger (1-Click)</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Batch Extracted Records Table -->
+          <div class="card" id="batchResultsCard" style="display: none; padding: 0; overflow: hidden;">
+            <div class="card-header" style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; margin-bottom: 0;">
+              <div>
+                <div class="card-title">Extracted Bills Queue</div>
+                <div class="card-subtitle">Review extracted invoice details. Click "Inspect" to view split-screen document preview or edit values.</div>
+              </div>
+            </div>
+
+            <div class="table-container" style="border: none; border-radius: 0;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>File</th>
+                    <th>Date</th>
+                    <th>Invoice #</th>
+                    <th>Customer / Buyer</th>
+                    <th>GSTIN</th>
+                    <th>Type</th>
+                    <th>Rate</th>
+                    <th class="text-right">Taxable (₹)</th>
+                    <th class="text-right">Total (₹)</th>
+                    <th>Confidence</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="batchResultsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 5: REPORTS & GSTR -->
+        <!-- ========================================================= -->
+        <section id="view-reports" class="view-section">
+          
+          <!-- Filters & Actions Card -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; justify-content: space-between;">
+              
+              <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;">
+                <div class="form-group" style="min-width: 150px;">
+                  <label class="form-label">From Date</label>
+                  <input type="date" id="reportFromDate" class="input font-mono-data" />
+                </div>
+                <div class="form-group" style="min-width: 150px;">
+                  <label class="form-label">To Date</label>
+                  <input type="date" id="reportToDate" class="input font-mono-data" />
+                </div>
+                <button class="btn btn-primary" id="reportApplyBtn">Apply Filter</button>
+                <button class="btn btn-outline" id="reportResetBtn">Reset</button>
+              </div>
+
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-primary btn-sm font-bold" id="reportExportXlsxBtn" style="background: #047857;">
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                  <span>Export Tally Excel (Dr/Cr)</span>
+                </button>
+                <button class="btn btn-outline btn-sm" id="reportExportPdfBtn">
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                  <span>Print Report</span>
+                </button>
+                <button class="btn btn-outline btn-sm" id="reportExportJsonBtn">
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                  <span>GSTR-1 JSON</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Report Metric Counters -->
+          <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+            <div class="kpi-card">
+              <span class="kpi-label">Vouchers Count</span>
+              <div class="kpi-value" id="reportKpiVouchers">0</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Taxable Amount</span>
+              <div class="kpi-value" id="reportKpiTaxable">₹ 0.00</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Total GST Collected</span>
+              <div class="kpi-value" id="reportKpiTotalGst">₹ 0.00</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Gross Invoiced Total</span>
+              <div class="kpi-value" id="reportKpiInvoiceTotal">₹ 0.00</div>
+            </div>
+          </div>
+
+          <!-- Rate-wise GST Summary Table -->
+          <div class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">GST Rate-wise Summary Breakdown</div>
+                <div class="card-subtitle">Aggregation across statutory tax slabs</div>
+              </div>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Tax Rate</th>
+                    <th>Vouchers</th>
+                    <th class="text-right">Taxable Value (₹)</th>
+                    <th class="text-right">CGST (₹)</th>
+                    <th class="text-right">SGST (₹)</th>
+                    <th class="text-right">IGST (₹)</th>
+                    <th class="text-right">Invoice Total (₹)</th>
+                  </tr>
+                </thead>
+                <tbody id="reportRateTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- GSTR-1 B2B Registered Party Invoices -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">GSTR-1 Section 4A - B2B Invoices</div>
+                <div class="card-subtitle">Sales to registered businesses with valid GSTIN</div>
+              </div>
+            </div>
+            <div class="table-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Invoice No</th>
+                    <th>Customer Name</th>
+                    <th>GSTIN</th>
+                    <th>Type</th>
+                    <th class="text-right">Taxable (₹)</th>
+                    <th class="text-right">Invoice Value (₹)</th>
+                  </tr>
+                </thead>
+                <tbody id="reportB2bTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- VIEW 6: CLIENTS / CUSTOMERS MASTER DIRECTORY & SALES LEDGER -->
+        <!-- ========================================================= -->
+        <section id="view-clients" class="view-section">
+          
+          <!-- Filters & Action Bar -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between;">
+              
+              <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; flex: 1; min-width: 280px;">
+                <!-- Search Input -->
+                <div class="input-group" style="flex: 1; min-width: 220px;">
+                  <span class="input-icon-left">
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                  </span>
+                  <input type="text" id="clientSearchInput" class="input input-with-icon" placeholder="Search by Client Name, GSTIN, State, PAN..." />
+                </div>
+
+                <!-- State Filter -->
+                <div style="min-width: 170px;">
+                  <select id="clientStateFilter" class="select">
+                    <option value="">All States / Jurisdictions</option>
+                    <option value="27">27 - Maharashtra (Intra-State)</option>
+                    <option value="interstate">Inter-State Clients (IGST)</option>
+                    <option value="07">07 - Delhi</option>
+                    <option value="29">29 - Karnataka</option>
+                    <option value="33">33 - Tamil Nadu</option>
+                    <option value="36">36 - Telangana</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn btn-outline btn-sm font-bold" id="exportClientsCsvBtn">
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                  <span>Export Clients Directory</span>
+                </button>
+                <button class="btn btn-primary btn-sm font-bold" id="addNewClientBtn" onclick="app.openClientModal()">
+                  <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                  <span>+ Add New Client</span>
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Client KPI Cards -->
+          <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr); margin-bottom: 24px;">
+            <div class="kpi-card">
+              <span class="kpi-label">Total Registered Clients</span>
+              <div class="kpi-value" id="kpiTotalClients">0</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Active Clients with Sales</span>
+              <div class="kpi-value" id="kpiActiveClients">0</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Total Invoiced Volume</span>
+              <div class="kpi-value" id="kpiTotalClientSales">₹ 0.00</div>
+            </div>
+            <div class="kpi-card">
+              <span class="kpi-label">Avg Sales / Active Client</span>
+              <div class="kpi-value" id="kpiAvgClientSales">₹ 0.00</div>
+            </div>
+          </div>
+
+          <!-- Clients Master Directory Table -->
+          <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="card-header" style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0; margin-bottom: 0;">
+              <div>
+                <div class="card-title">Client Master Directory & Sales Records</div>
+                <div class="card-subtitle">Maintain client names, statutory GSTINs, state codes, and track all sales vouchers recorded per client.</div>
+              </div>
+            </div>
+
+            <div class="table-container" style="border: none; border-radius: 0;">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Client / Customer Name</th>
+                    <th>GSTIN</th>
+                    <th>State / Jurisdiction</th>
+                    <th>PAN</th>
+                    <th class="text-center">Vouchers</th>
+                    <th class="text-right">Taxable Volume (₹)</th>
+                    <th class="text-right">Gross Sales (₹)</th>
+                    <th class="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="clientsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: ADD / EDIT VOUCHER -->
+  <!-- ========================================================= -->
+  <div class="modal-backdrop" id="voucherModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="voucherModalTitle">New Sales Voucher</h2>
+        <button class="btn btn-outline btn-sm btn-icon-only" data-close-modal>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="voucherForm">
+        <input type="hidden" id="vchEditId" value="" />
+        
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Date *</label>
+              <input type="date" id="vchInputDate" class="input font-mono-data" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Voucher Number *</label>
+              <input type="text" id="vchInputNumber" class="input font-mono-data" placeholder="CR-70" required />
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label class="form-label">Customer / Client Name *</label>
+                <span style="font-size: 11px; color: #64748b;">(Auto-syncs with GSTIN)</span>
+              </div>
+              <input type="text" id="vchInputCustomer" class="input" list="clientNameDatalist" placeholder="e.g. Apollo Hospitals Enterprise Ltd" autocomplete="off" required />
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label class="form-label">Customer GSTIN</label>
+                <span id="vchGstinStateBadge" class="badge" style="display: none; font-size: 10px;">Maharashtra</span>
+              </div>
+              <input type="text" id="vchInputGstin" class="input font-mono-data" list="clientGstinDatalist" placeholder="e.g. 27ACWFS1289P1Z3 (15 characters)" autocomplete="off" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Taxable Value (₹) *</label>
+              <input type="number" step="0.01" id="vchInputTaxable" class="input font-mono-data" placeholder="0.00" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">GST Rate *</label>
+              <select id="vchInputRate" class="select">
+                <option value="0">0% (Exempt)</option>
+                <option value="5" selected>5% (Standard 5%)</option>
+                <option value="12">12% (Standard 12%)</option>
+                <option value="18">18% (Standard 18%)</option>
+                <option value="28">28% (Luxury 28%)</option>
+              </select>
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; cursor: pointer;">
+                <input type="checkbox" id="vchInputInterstate" style="width: 16px; height: 16px;" />
+                <span>Inter-State Transaction (IGST instead of CGST + SGST)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Realtime Calculation Box -->
+          <div class="calc-summary-box">
+            <div class="calc-row">
+              <span>Taxable Base:</span>
+              <span id="modalTaxablePreview" class="font-mono-data font-bold">₹ 0.00</span>
+            </div>
+            <div class="calc-row" id="modalCgstRow">
+              <span>CGST:</span>
+              <span id="modalCgstPreview" class="font-mono-data">₹ 0.00 (2.5%)</span>
+            </div>
+            <div class="calc-row" id="modalSgstRow">
+              <span>SGST:</span>
+              <span id="modalSgstPreview" class="font-mono-data">₹ 0.00 (2.5%)</span>
+            </div>
+            <div class="calc-row" id="modalIgstRow" style="display: none;">
+              <span>IGST:</span>
+              <span id="modalIgstPreview" class="font-mono-data font-bold">₹ 0.00 (5%)</span>
+            </div>
+            <div class="calc-row total">
+              <span>Invoice Total:</span>
+              <span id="modalTotalPreview" class="font-mono-data text-slate-900">₹ 0.00</span>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Voucher</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: SPLIT-SCREEN BILL INSPECTOR & CANVAS PREVIEW -->
+  <!-- ========================================================= -->
+  <div class="modal-backdrop" id="billInspectorModal">
+    <div class="modal-content inspector-modal-large">
+      
+      <!-- Top Inspector Header -->
+      <div class="modal-header inspector-header">
+        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+          <div class="inspector-icon">🔍</div>
+          <div>
+            <h2 class="modal-title" id="inspectorModalTitle">Invoice Document Inspector</h2>
+            <div style="font-size: 11px; color: #64748b;" id="inspectorFileMeta">Multi-engine OCR & Deep Figure Extraction Engine</div>
+          </div>
+          <span class="badge badge-success font-mono-data" id="inspectorConfidenceBadge">99.1% Confidence</span>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button type="button" class="btn btn-outline btn-sm btn-icon-only" data-close-modal title="Close Inspector">
+            <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inspector Sub-Toolbar: Page & Zoom Controls -->
+      <div class="inspector-toolbar">
+        <!-- Page Navigation -->
+        <div class="inspector-toolbar-group" id="inspPageControls">
+          <button type="button" class="btn btn-outline btn-xs" id="inspPrevPageBtn" title="Previous Page">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+          </button>
+          <span class="inspector-toolbar-text font-mono-data" id="inspPageIndicator">Page 1 of 1</span>
+          <button type="button" class="btn btn-outline btn-xs" id="inspNextPageBtn" title="Next Page">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- Zoom Controls -->
+        <div class="inspector-toolbar-group">
+          <button type="button" class="btn btn-outline btn-xs" id="inspZoomOutBtn" title="Zoom Out (−)">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/></svg>
+          </button>
+          <span class="inspector-toolbar-text font-mono-data" id="inspZoomLevel">140%</span>
+          <button type="button" class="btn btn-outline btn-xs" id="inspZoomInBtn" title="Zoom In (+)">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          </button>
+          <button type="button" class="btn btn-outline btn-xs" id="inspZoomFitBtn" title="Fit Width">
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+            <span>Fit</span>
+          </button>
+          <button type="button" class="btn btn-outline btn-xs" id="inspZoomResetBtn" title="100% Scale">100%</button>
+        </div>
+
+        <!-- Overlay Toggle -->
+        <div class="inspector-toolbar-group" style="margin-left: auto;">
+          <label class="inspector-toggle-label">
+            <input type="checkbox" id="inspToggleOverlay" checked />
+            <span>Interactive Boxes</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Active Pick Mode Banner (Hidden by default) -->
+      <div id="inspActiveTargetBanner" class="inspector-pick-banner" style="display: none;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="pick-pulse-dot"></span>
+          <span>🎯 <strong>PICK MODE ACTIVE:</strong> Click any text or figure on the document to assign to <span id="inspActiveTargetFieldName" class="badge badge-warning font-bold">Taxable Value</span></span>
+        </div>
+        <button type="button" class="btn btn-xs btn-outline" id="inspCancelPickBtn" style="background: white; color: #0f172a;">Cancel Pick</button>
+      </div>
+
+      <!-- Inspector Body: Split Screen -->
+      <div class="modal-body inspector-modal-body">
+        <div class="split-screen-grid inspector-split-grid">
+          
+          <!-- Document Canvas Viewport (Left) -->
+          <div class="doc-preview-viewport" id="inspectorViewport">
+            <div class="doc-canvas-wrapper" id="inspectorCanvasWrapper">
+              <canvas id="inspectorCanvas"></canvas>
+              <div id="inspectorOcrOverlay" class="inspector-ocr-overlay"></div>
+              
+              <!-- Quick Assignment Context Menu -->
+              <div id="inspectorAssignMenu" class="inspector-assign-popover" style="display: none;">
+                <div class="popover-header">
+                  <span id="popoverSelectedText" class="font-mono-data font-bold">₹ 24,050.00</span>
+                  <button type="button" class="popover-close-btn" id="closePopoverBtn">×</button>
+                </div>
+                <div class="popover-actions">
+                  <button type="button" class="popover-action-btn" data-assign="taxable">
+                    <span class="popover-action-icon">💰</span> Set as <strong>Taxable Base (₹)</strong>
+                  </button>
+                  <button type="button" class="popover-action-btn" data-assign="total">
+                    <span class="popover-action-icon">💵</span> Set as <strong>Invoice Total (₹)</strong>
+                  </button>
+                  <button type="button" class="popover-action-btn" data-assign="invoice_number">
+                    <span class="popover-action-icon">🧾</span> Set as <strong>Invoice #</strong>
+                  </button>
+                  <button type="button" class="popover-action-btn" data-assign="customer">
+                    <span class="popover-action-icon">👤</span> Set as <strong>Customer Name</strong>
+                  </button>
+                  <button type="button" class="popover-action-btn" data-assign="gstin">
+                    <span class="popover-action-icon">🏢</span> Set as <strong>Customer GSTIN</strong>
+                  </button>
+                  <button type="button" class="popover-action-btn" data-assign="date">
+                    <span class="popover-action-icon">📅</span> Set as <strong>Invoice Date</strong>
+                  </button>
+                  <button type="button" class="popover-action-btn" data-assign="copy">
+                    <span class="popover-action-icon">📋</span> Copy Text
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Right Tabbed Panel -->
+          <div class="inspector-right-panel">
+            
+            <!-- Navigation Tabs -->
+            <div class="inspector-tabs-nav">
+              <button type="button" class="inspector-tab-btn active" id="tabBtnFields" onclick="app.switchInspectorTab('fields')">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Fields & Tax Math</span>
+              </button>
+              <button type="button" class="inspector-tab-btn" id="tabBtnFigures" onclick="app.switchInspectorTab('figures')">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                <span id="tabFiguresCountLabel">All Detected Figures</span>
+              </button>
+              <button type="button" class="inspector-tab-btn" id="tabBtnRawText" onclick="app.switchInspectorTab('rawText')">
+                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                <span>Raw OCR Text</span>
+              </button>
+            </div>
+
+            <!-- Tab 1: Form & Tax Reconciliation -->
+            <div id="inspTabFields" class="inspector-tab-content active">
+              <form id="inspectorEditForm" class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 12px;">
+                <input type="hidden" id="inspBillId" />
+                
+                <!-- Invoice Number Field with Target Picker -->
+                <div class="form-group">
+                  <div class="field-label-row">
+                    <label class="form-label">Invoice Number *</label>
+                    <button type="button" class="btn-pick" data-pick-target="inspVoucherNumber" title="Click to pick from document">🎯 Pick</button>
+                  </div>
+                  <input type="text" id="inspVoucherNumber" class="input font-mono-data" required />
+                </div>
+
+                <!-- Invoice Date Field with Target Picker -->
+                <div class="form-group">
+                  <div class="field-label-row">
+                    <label class="form-label">Invoice Date *</label>
+                    <button type="button" class="btn-pick" data-pick-target="inspDate" title="Click to pick from document">🎯 Pick</button>
+                  </div>
+                  <input type="date" id="inspDate" class="input font-mono-data" required />
+                </div>
+
+                <!-- Customer / Buyer Field with Target Picker -->
+                <div class="form-group" style="grid-column: span 2;">
+                  <div class="field-label-row">
+                    <label class="form-label">Buyer / Customer Name *</label>
+                    <button type="button" class="btn-pick" data-pick-target="inspCustomer" title="Click to pick from document">🎯 Pick</button>
+                  </div>
+                  <input type="text" id="inspCustomer" class="input" list="clientNameDatalist" autocomplete="off" required />
+                </div>
+
+                <!-- Buyer GSTIN with Target Picker -->
+                <div class="form-group" style="grid-column: span 2;">
+                  <div class="field-label-row">
+                    <label class="form-label">Buyer GSTIN</label>
+                    <button type="button" class="btn-pick" data-pick-target="inspGstin" title="Click to pick from document">🎯 Pick</button>
+                  </div>
+                  <input type="text" id="inspGstin" class="input font-mono-data" list="clientGstinDatalist" placeholder="27ACWFS1289P1Z3" autocomplete="off" />
+                </div>
+
+                <!-- Taxable Value with Target Picker -->
+                <div class="form-group">
+                  <div class="field-label-row">
+                    <label class="form-label">Taxable Base (₹) *</label>
+                    <button type="button" class="btn-pick btn-pick-highlight" data-pick-target="inspTaxable" title="Click to pick from document">🎯 Pick Figure</button>
+                  </div>
+                  <input type="number" step="0.01" id="inspTaxable" class="input font-mono-data font-bold" required />
+                </div>
+
+                <!-- GST Rate -->
+                <div class="form-group">
+                  <div class="field-label-row">
+                    <label class="form-label">GST Slab Rate *</label>
+                  </div>
+                  <select id="inspRate" class="select font-bold">
+                    <option value="0">0% (Exempt)</option>
+                    <option value="5">5% (Standard 5%)</option>
+                    <option value="12">12% (Standard 12%)</option>
+                    <option value="18">18% (Standard 18%)</option>
+                    <option value="28">28% (Luxury 28%)</option>
+                  </select>
+                </div>
+
+                <!-- Interstate -->
+                <div class="form-group" style="grid-column: span 2;">
+                  <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">
+                    <input type="checkbox" id="inspInterstate" style="width: 16px; height: 16px;" />
+                    <span>Inter-State Transaction (Apply IGST instead of CGST + SGST)</span>
+                  </label>
+                </div>
+              </form>
+
+              <!-- Realtime Mathematical Tax Breakdown -->
+              <div class="calc-summary-box" style="margin-top: 14px;">
+                <div class="calc-row">
+                  <span>Taxable Amount:</span>
+                  <span id="inspTaxablePreview" class="font-mono-data font-bold">₹ 0.00</span>
+                </div>
+                <div class="calc-row" id="inspCgstRow">
+                  <span>CGST:</span>
+                  <span id="inspCgstPreview" class="font-mono-data">₹ 0.00</span>
+                </div>
+                <div class="calc-row" id="inspSgstRow">
+                  <span>SGST:</span>
+                  <span id="inspSgstPreview" class="font-mono-data">₹ 0.00</span>
+                </div>
+                <div class="calc-row" id="inspIgstRow" style="display: none;">
+                  <span>IGST:</span>
+                  <span id="inspIgstPreview" class="font-mono-data font-bold">₹ 0.00</span>
+                </div>
+                <div class="calc-row total">
+                  <span>Calculated Total:</span>
+                  <span id="inspTotalPreview" class="font-mono-data text-slate-900">₹ 0.00</span>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div style="margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; align-items: center;">
+                <button type="button" class="btn btn-outline btn-sm font-bold" id="inspAutoReconcileBtn" title="Run mathematical cross-reconciliation on figures">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                  <span>Auto-Reconcile Math</span>
+                </button>
+
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" class="btn btn-primary btn-sm font-bold" id="saveInspectorChangesBtn">Update Extracted Bill</button>
+                  <button type="button" class="btn btn-success btn-sm font-bold" id="inspImportDirectBtn" style="background: #047857;">Import to Ledger Now</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab 2: Detected Figures Stream & Candidate Tokens -->
+            <div id="inspTabFigures" class="inspector-tab-content" style="display: none;">
+              <div style="font-size: 13px; color: #64748b; margin-bottom: 10px;">
+                All numeric values, invoice numbers, dates, and GSTINs detected across the entire document. Click any pill to assign immediately.
+              </div>
+              
+              <!-- Search filter for tokens -->
+              <div class="input-group" style="margin-bottom: 12px;">
+                <span class="input-icon-left">
+                  <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                </span>
+                <input type="text" id="inspTokenFilterInput" class="input input-with-icon" style="font-size: 12px; padding: 7px 12px 7px 34px;" placeholder="Filter figures or text in document..." />
+              </div>
+
+              <!-- Figures Group Container -->
+              <div id="inspFiguresListContainer" class="inspector-figures-stream"></div>
+            </div>
+
+            <!-- Tab 3: Raw OCR Text Stream -->
+            <div id="inspTabRawText" class="inspector-tab-content" style="display: none;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 12px; font-weight: 700; color: #475569;">Full Extracted Document Text Layer</span>
+                <button type="button" class="btn btn-outline btn-xs" id="inspCopyRawTextBtn">
+                  <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                  <span>Copy Text</span>
+                </button>
+              </div>
+              <pre id="inspRawTextViewer" class="inspector-raw-text font-mono-data"></pre>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="modal-footer" style="padding: 10px 20px;">
+        <span style="font-size: 11px; color: #64748b; margin-right: auto;">
+          💡 Tip: Click any number or box on the document canvas to instantly assign it to any field.
+        </span>
+        <button type="button" class="btn btn-outline btn-sm" data-close-modal>Close</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: VIEW / PRINT INVOICE VOUCHER -->
+  <!-- ========================================================= -->
+  <div class="modal-backdrop" id="viewInvoiceModal">
+    <div class="modal-content" style="max-width: 580px;">
+      <div class="modal-header">
+        <h2 class="modal-title">Sales Invoice Voucher</h2>
+        <button class="btn btn-outline btn-sm btn-icon-only" data-close-modal>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body" style="gap: 16px;">
+        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
+          <div>
+            <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">Voucher Number</div>
+            <div class="font-mono-data font-bold text-slate-900" style="font-size: 16px;" id="viewInvNumber">-</div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700;">Date</div>
+            <div class="font-mono-data" id="viewInvDate">-</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <div style="font-size: 11px; color: #64748b; font-weight: 600;">Customer / Party</div>
+            <div class="font-bold text-slate-900" id="viewInvCustomer">-</div>
+          </div>
+          <div>
+            <div style="font-size: 11px; color: #64748b; font-weight: 600;">GSTIN</div>
+            <div class="font-mono-data" id="viewInvGstin">-</div>
+          </div>
+        </div>
+
+        <div class="calc-summary-box">
+          <div class="calc-row">
+            <span>Taxable Amount:</span>
+            <span class="font-mono-data font-bold" id="viewInvTaxable">₹ 0.00</span>
+          </div>
+          <div class="calc-row">
+            <span>GST Slab Rate:</span>
+            <span class="badge badge-rate" id="viewInvRate">5%</span>
+          </div>
+          <div id="viewInvTaxDetails"></div>
+          <div class="calc-row total">
+            <span>Invoice Total:</span>
+            <span class="font-mono-data" id="viewInvTotal">₹ 0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="window.print()">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          <span>Print / PDF</span>
+        </button>
+        <button type="button" class="btn btn-primary" data-close-modal>Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: ADD / EDIT CLIENT MASTER -->
+  <!-- ========================================================= -->
+  <div class="modal-backdrop" id="clientModal">
+    <div class="modal-content" style="max-width: 620px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div class="inspector-icon" style="background: #2563eb;">🏢</div>
+          <div>
+            <h2 class="modal-title" id="clientModalTitle">Add New Client</h2>
+            <div style="font-size: 11px; color: #64748b;">Statutory GST Profile & Master Ledger</div>
+          </div>
+        </div>
+        <button class="btn btn-outline btn-sm btn-icon-only" data-close-modal>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="clientForm">
+        <input type="hidden" id="clientEditId" value="" />
+        
+        <div class="modal-body" style="gap: 14px;">
+          <div class="form-grid" style="grid-template-columns: 1fr 1fr; gap: 12px;">
+            
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label">Client / Legal Business Name *</label>
+              <input type="text" id="cliNameInput" class="input" placeholder="e.g. Apollo Hospitals Enterprise Ltd" required />
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label class="form-label">Client GSTIN * (15 Characters)</label>
+                <span id="cliGstinFeedback" class="badge" style="font-size: 10px; display: none;">Valid GSTIN</span>
+              </div>
+              <input type="text" id="cliGstinInput" class="input font-mono-data" placeholder="e.g. 27ACWFS1289P1Z3" maxlength="15" required />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">State / Jurisdiction</label>
+              <input type="text" id="cliStateInput" class="input" placeholder="Auto-derived from GSTIN" readonly style="background: #f8fafc;" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">PAN Number</label>
+              <input type="text" id="cliPanInput" class="input font-mono-data" placeholder="Auto-derived (e.g. ACWFS1289P)" readonly style="background: #f8fafc;" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Contact Person</label>
+              <input type="text" id="cliContactInput" class="input" placeholder="e.g. Accounts Dept / Manager" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Phone / Mobile</label>
+              <input type="text" id="cliPhoneInput" class="input font-mono-data" placeholder="+91 98200 12345" />
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="cliEmailInput" class="input" placeholder="billing@clientdomain.com" />
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label">Billing Address</label>
+              <textarea id="cliAddressInput" class="textarea" rows="2" placeholder="Full registered commercial / hospital address..."></textarea>
+            </div>
+
+            <div class="form-group" style="grid-column: span 2;">
+              <label class="form-label">Payment Terms</label>
+              <select id="cliTermsInput" class="select">
+                <option value="Immediate / Cash">Immediate / Cash</option>
+                <option value="15 Days Net">15 Days Net</option>
+                <option value="30 Days Net" selected>30 Days Net</option>
+                <option value="45 Days Net">45 Days Net</option>
+                <option value="60 Days Net">60 Days Net</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal>Cancel</button>
+          <button type="submit" class="btn btn-primary font-bold" id="saveClientBtn">Save Client Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL: CLIENT SALES VOUCHERS LEDGER -->
+  <!-- ========================================================= -->
+  <div class="modal-backdrop" id="clientLedgerModal">
+    <div class="modal-content" style="max-width: 1050px; width: 95vw; max-height: 90vh;">
+      <div class="modal-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+            <h2 class="modal-title" id="clientLedgerModalTitle">Client Sales Ledger</h2>
+            <span class="badge font-mono-data" id="clientLedgerGstinBadge">27ACWFS1289P1Z3</span>
+            <span class="badge" id="clientLedgerStateBadge">Maharashtra</span>
+          </div>
+          <div style="font-size: 12px; color: #64748b; margin-top: 2px;" id="clientLedgerSubtitle">All historical sales vouchers and GST collected for this client</div>
+        </div>
+        <button class="btn btn-outline btn-sm btn-icon-only" data-close-modal>
+          <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="modal-body" style="padding: 16px; gap: 16px; overflow-y: auto;">
+        
+        <!-- Summary Metric Cards for this client -->
+        <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="kpi-card" style="padding: 12px 16px;">
+            <span class="kpi-label">Recorded Vouchers</span>
+            <div class="kpi-value" id="clientLedgerVoucherCount">0</div>
+          </div>
+          <div class="kpi-card" style="padding: 12px 16px;">
+            <span class="kpi-label">Taxable Volume</span>
+            <div class="kpi-value" id="clientLedgerTaxableVolume">₹ 0.00</div>
+          </div>
+          <div class="kpi-card" style="padding: 12px 16px;">
+            <span class="kpi-label">Total GST Collected</span>
+            <div class="kpi-value" id="clientLedgerTotalGst">₹ 0.00</div>
+          </div>
+          <div class="kpi-card" style="padding: 12px 16px;">
+            <span class="kpi-label">Gross Invoiced Total</span>
+            <div class="kpi-value" id="clientLedgerInvoiceTotal">₹ 0.00</div>
+          </div>
+        </div>
+
+        <!-- Client Vouchers Table -->
+        <div class="card" style="padding: 0; overflow: hidden; margin-bottom: 0;">
+          <div class="table-container" style="border: none; border-radius: 0; max-height: 400px; overflow-y: auto;">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Voucher #</th>
+                  <th>Type</th>
+                  <th>Rate</th>
+                  <th class="text-right">Taxable (₹)</th>
+                  <th class="text-right">CGST (₹)</th>
+                  <th class="text-right">SGST (₹)</th>
+                  <th class="text-right">IGST (₹)</th>
+                  <th class="text-right">Total (₹)</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="clientLedgerTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer" style="display: flex; justify-content: space-between; align-items: center;">
+        <button type="button" class="btn btn-primary btn-sm font-bold" id="clientLedgerRecordVoucherBtn">
+          <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>+ Record New Voucher for this Client</span>
+        </button>
+
+        <div style="display: flex; gap: 8px;">
+          <button type="button" class="btn btn-outline btn-sm font-bold" id="clientLedgerExportExcelBtn" style="color: #047857;">
+            <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+            <span>Export Client Vouchers</span>
+          </button>
+          <button type="button" class="btn btn-outline btn-sm" data-close-modal>Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Global Autocomplete Datalists for Customers and GSTINs -->
+  <datalist id="clientNameDatalist"></datalist>
+  <datalist id="clientGstinDatalist"></datalist>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Scripts -->
+  <script src="tally.js"></script>
+  <script src="excel.js"></script>
+  <script src="parser.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
